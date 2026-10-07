@@ -1,8 +1,15 @@
 # Tempo: website time tracker
 
+[![CI](https://github.com/ShaifArfan/tempo/actions/workflows/ci.yml/badge.svg)](https://github.com/ShaifArfan/tempo/actions/workflows/ci.yml)
+
 A browser extension that tracks how long you spend on each website and sorts that time into **Work**, **Entertainment**, **Waste** and **Other**. At the end of the day you can see how much of your browser time was focused work.
 
 It runs in Chromium browsers (Chrome, Brave, Edge, Arc, Vivaldi, Opera) and Firefox browsers (Firefox, Zen, LibreWolf, Floorp). All data stays in your browser. Nothing is sent anywhere.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/dashboard-dark.png">
+  <img alt="Tempo dashboard showing today's work time, the split between work, entertainment and waste, and charts by hour and for the last 7 days" src="docs/dashboard-light.png">
+</picture>
 
 ## What you get
 
@@ -11,6 +18,15 @@ It runs in Chromium browsers (Chrome, Brave, Edge, Arc, Vivaldi, Opera) and Fire
 - **Toolbar badge**: today's work time, colored by the current site's category, so you can tell at a glance when you've drifted onto a "waste" site.
 - **End-of-day notification** (21:00 by default) with the day's totals.
 - **Rules & settings**: your own domain rules, idle timeout, badge mode, history retention, and JSON export/import.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/popup-dark.png">
+    <img alt="Tempo popup showing focused time, the current site with category buttons, and top sites" src="docs/popup-light.png" width="380">
+  </picture>
+</p>
+
+Screenshots use a week of demo data.
 
 ## How time is counted
 
@@ -36,7 +52,7 @@ Checked in this order, first match wins:
 
 ## Install
 
-Build first. You need Node 20 or newer, and there are no dependencies:
+Build first. You need Node 22 or newer, and there are no dependencies:
 
 ```bash
 npm run build
@@ -95,3 +111,15 @@ Permissions used: `tabs` (to read the active tab's address), `storage`, `idle`, 
 - Each browser keeps its own data. Time in Brave and time in Zen are tracked separately. To move history between them, use Export and Import in Settings (Import replaces matching days rather than adding to them).
 - Tempo only sees the browser. Time in other apps isn't tracked.
 - After you leave the computer, up to one idle timeout (2 minutes by default) is still counted before tracking stops.
+
+## Contributing
+
+Issues and pull requests are welcome.
+
+- **A site is in the wrong category, or missing?** Add it to the right list in [src/lib/sites.js](src/lib/sites.js). Use the bare domain, like `example.com`; it covers subdomains too. Only list sites most people would put in the same category. Mixed-use sites like LinkedIn or Medium are better left to each person's own rules.
+- **Changing code?** Run `npm test`, then `npm run build` and `npm run lint:firefox`. GitHub runs the same checks on every pull request. For changes to tracking or the UI, try them in at least one Chromium browser and one Firefox browser.
+- **Keep it private and simple.** No network requests, no analytics, no content scripts, no runtime dependencies.
+
+## License
+
+[MIT](LICENSE)

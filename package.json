@@ -2,6 +2,11 @@
   "name": "tempo-time-tracker",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShaifArfan/tempo.git"
+  },
   "description": "Browser extension that tracks time per website and splits it into work, entertainment and waste.",
   "type": "module",
   "scripts": {
@@ -12,6 +17,6 @@
     "lint:firefox": "npx --yes web-ext lint --source-dir dist/firefox"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   }
 }
