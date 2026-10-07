@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tempo</title>
+    <link rel="stylesheet" href="../ui/base.css" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popup">
+      <header class="top">
+        <div>
+          <p class="eyebrow" id="dateLine">Today</p>
+          <p class="hero"><span id="focusTime">0m</span> <span class="hero-unit">focused</span></p>
+          <p class="muted small" id="totalLine">Nothing tracked yet today</p>
+        </div>
+        <div class="score" id="score" aria-label="Focus score">
+          <span class="score-value" id="scoreValue">–</span>
+          <span class="score-label">focus</span>
+        </div>
+      </header>
+
+      <section class="card current" id="current">
+        <div class="current-head">
+          <span class="avatar" id="curAvatar" aria-hidden="true"></span>
+          <div class="current-text">
+            <p class="host" id="curHost">This page</p>
+            <p class="muted small" id="curMeta"></p>
+          </div>
+        </div>
+        <div class="seg" id="curSeg" role="radiogroup" aria-label="Category for this site"></div>
+      </section>
+
+      <section class="split">
+        <div id="stack"></div>
+        <ul class="legend" id="legend"></ul>
+      </section>
+
+      <section>
+        <h2 class="section-title">Top sites today</h2>
+        <ul class="sites" id="sites"></ul>
+        <p class="empty muted small" id="sitesEmpty" hidden>Browse a bit and your sites will show up here.</p>
+      </section>
+
+      <footer class="foot">
+        <button class="btn primary" id="openDash" type="button">Open dashboard</button>
+        <button class="btn" id="openSettings" type="button">Settings</button>
+      </footer>
+    </main>
+
+    <script src="../lib/sites.js"></script>
+    <script src="../lib/core.js"></script>
+    <script src="../ui/ui.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

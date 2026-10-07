@@ -1,0 +1,226 @@
+/* Shared tokens and controls for the popup and dashboard. */
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --surface-2: #f0efec;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.1);
+  --hover: rgba(11, 11, 11, 0.05);
+  --focus: #2a78d6;
+  --good: #006300;
+  --bad: #d03b3b;
+
+  /* Category colors: validated as a set for color-vision deficiency (blue / yellow / magenta). */
+  --work: #2a78d6;
+  --entertainment: #eda100;
+  --waste: #e87ba4;
+  --other: #b9b8b1;
+
+  --radius: 10px;
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-2: #262624;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.1);
+    --hover: rgba(255, 255, 255, 0.06);
+    --focus: #3987e5;
+    --good: #0ca30c;
+    --bad: #e66767;
+
+    --work: #3987e5;
+    --entertainment: #c98500;
+    --waste: #d55181;
+    --other: #5e5d58;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: 14px/1.45 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+select,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.muted {
+  color: var(--ink-2);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Category swatch shown beside text (text itself never takes the category color). */
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--c, var(--other));
+}
+
+[data-cat='work'] { --c: var(--work); }
+[data-cat='entertainment'] { --c: var(--entertainment); }
+[data-cat='waste'] { --c: var(--waste); }
+[data-cat='other'] { --c: var(--other); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: var(--hover);
+}
+
+.btn.primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--page);
+}
+
+.btn.primary:hover {
+  opacity: 0.88;
+}
+
+.btn.danger {
+  color: var(--bad);
+}
+
+/* Compact category picker used in site lists. */
+.cat-select {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 28px;
+  padding: 3px 26px 3px 26px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 13px 50%, var(--c) 0 5px, transparent 5.5px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%23898781' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E")
+      no-repeat right 10px center,
+    var(--surface);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.cat-select:hover {
+  background-color: var(--surface-2);
+}
+
+.cat-select option {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+input[type='text'],
+input[type='time'],
+select.field {
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+/* Horizontal stacked bar: one segment per category, 2px surface gaps. */
+.stackbar {
+  display: flex;
+  gap: 2px;
+  height: 14px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.stackbar > span {
+  background: var(--c);
+  min-width: 2px;
+}
+
+.tip {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  min-width: 150px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16);
+  font-size: 12.5px;
+}
+
+.tip h4 {
+  margin: 0 0 4px;
+  font-size: 12.5px;
+}
+
+.tip .row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tip .row b {
+  margin-left: auto;
+  padding-left: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}

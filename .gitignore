@@ -1,0 +1,9 @@
+# Build output (npm run build)
+dist/
+
+node_modules/
+.web-extension-id
+web-ext-artifacts/
+*.xpi
+*.zip
+.DS_Store

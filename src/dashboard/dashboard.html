@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tempo dashboard</title>
+    <link rel="icon" href="../icons/icon-32.png" />
+    <link rel="stylesheet" href="../ui/base.css" />
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="#overview">
+          <img src="../icons/icon-32.png" width="22" height="22" alt="" />
+          <span>Tempo</span>
+        </a>
+        <nav class="tabs" aria-label="Sections">
+          <a href="#overview" data-view="overview">Overview</a>
+          <a href="#settings" data-view="settings">Rules &amp; settings</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <!-- Overview ----------------------------------------------------------->
+      <section data-panel="overview">
+        <div class="day-nav">
+          <div>
+            <h1 id="dayTitle">Today</h1>
+            <p class="muted" id="daySub"></p>
+          </div>
+          <div class="day-controls">
+            <button class="btn icon" id="prevDay" type="button" aria-label="Previous day">‹</button>
+            <input class="field" type="date" id="dayPicker" aria-label="Pick a day" />
+            <button class="btn icon" id="nextDay" type="button" aria-label="Next day">›</button>
+            <button class="btn" id="todayBtn" type="button">Today</button>
+          </div>
+        </div>
+
+        <div class="tiles" id="tiles"></div>
+
+        <div class="card split-card">
+          <div class="card-head">
+            <h2>Where your time went</h2>
+            <p class="muted" id="splitNote"></p>
+          </div>
+          <div id="splitBar"></div>
+          <ul class="legend" id="splitLegend"></ul>
+        </div>
+
+        <div class="charts">
+          <div class="card">
+            <div class="card-head">
+              <h2>By hour</h2>
+              <p class="muted">Minutes per hour, by category</p>
+            </div>
+            <div class="chart hours" id="hoursChart"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h2>Last 7 days</h2>
+              <p class="muted">Click a day to open it</p>
+            </div>
+            <div class="chart week" id="weekChart"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head row">
+            <div>
+              <h2>Sites</h2>
+              <p class="muted">Change a category and every day updates, past ones included.</p>
+            </div>
+          </div>
+          <div class="chips" id="siteFilters" role="toolbar" aria-label="Filter sites"></div>
+          <div class="table-wrap">
+            <table class="sites-table">
+              <thead>
+                <tr>
+                  <th scope="col">Site</th>
+                  <th scope="col">Category</th>
+                  <th scope="col" class="right">Time</th>
+                  <th scope="col" class="share-col">Share of day</th>
+                </tr>
+              </thead>
+              <tbody id="sitesBody"></tbody>
+            </table>
+          </div>
+          <p class="empty muted" id="sitesEmpty" hidden>No sites for this day.</p>
+        </div>
+      </section>
+
+      <!-- Settings ----------------------------------------------------------->
+      <section data-panel="settings" hidden>
+        <div class="day-nav">
+          <div>
+            <h1>Rules &amp; settings</h1>
+            <p class="muted">Everything stays in this browser. Tempo never sends your data anywhere.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Your rules</h2>
+            <p class="muted">
+              A rule for <code>google.com</code> also covers <code>mail.google.com</code>, unless a more specific rule exists.
+              Your rules always beat Tempo’s guesses.
+            </p>
+          </div>
+          <form class="add-rule" id="addRule">
+            <input type="text" id="rulePattern" placeholder="youtube.com or paste a link" aria-label="Website" autocomplete="off" required />
+            <select class="cat-select" id="ruleCat" aria-label="Category"></select>
+            <button class="btn primary" type="submit">Add rule</button>
+          </form>
+          <p class="form-error" id="ruleError" role="alert" hidden></p>
+          <ul class="rules" id="rulesList"></ul>
+          <p class="empty muted" id="rulesEmpty">No rules yet. Pick a category for any site in the popup or the Sites table and it shows up here.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Tracking</h2></div>
+          <div class="settings-grid">
+            <label for="idleMinutes">Stop counting after I’ve been idle for</label>
+            <select class="field" id="idleMinutes">
+              <option value="1">1 minute</option>
+              <option value="2">2 minutes</option>
+              <option value="3">3 minutes</option>
+              <option value="5">5 minutes</option>
+              <option value="10">10 minutes</option>
+              <option value="15">15 minutes</option>
+            </select>
+
+            <label for="countAudible">Keep counting while a tab plays sound (videos, calls, music), even when idle</label>
+            <input type="checkbox" id="countAudible" class="switch" />
+
+            <label for="badge">Toolbar badge shows</label>
+            <select class="field" id="badge">
+              <option value="work">Today’s work time</option>
+              <option value="site">Today’s time on the current site</option>
+              <option value="off">Nothing</option>
+            </select>
+          </div>
+          <p class="muted note">Time counts only for the active tab of a focused browser window. Private windows are never tracked.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>End-of-day summary</h2></div>
+          <div class="settings-grid">
+            <label for="dailySummary">Show a notification with the day’s totals</label>
+            <input type="checkbox" id="dailySummary" class="switch" />
+            <label for="summaryTime">At</label>
+            <input type="time" id="summaryTime" />
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h2>Your data</h2></div>
+          <div class="settings-grid">
+            <label for="retentionDays">Keep history for</label>
+            <select class="field" id="retentionDays">
+              <option value="30">30 days</option>
+              <option value="90">90 days</option>
+              <option value="180">180 days</option>
+              <option value="365">1 year</option>
+              <option value="0">Forever</option>
+            </select>
+          </div>
+          <div class="data-actions">
+            <button class="btn" id="exportBtn" type="button">Export JSON</button>
+            <button class="btn" id="importBtn" type="button">Import JSON…</button>
+            <input type="file" id="importFile" accept="application/json,.json" hidden />
+            <button class="btn danger" id="eraseBtn" type="button">Erase all data…</button>
+          </div>
+          <p class="muted note" id="dataNote"></p>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <div class="tip" id="tip" role="tooltip" hidden></div>
+
+    <script src="../lib/sites.js"></script>
+    <script src="../lib/core.js"></script>
+    <script src="../ui/ui.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "tempo-time-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser extension that tracks time per website and splits it into work, entertainment and waste.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "package": "node scripts/build.mjs --zip",
+    "icons": "node scripts/icons.mjs",
+    "test": "node --test \"test/*.test.mjs\"",
+    "lint:firefox": "npx --yes web-ext lint --source-dir dist/firefox"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
