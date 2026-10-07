@@ -1,4 +1,4 @@
-// Draws the Tempo icon (a three-part donut: work / entertainment / waste) as
+// Draws the Daysplit icon (a three-part donut: work / entertainment / waste) as
 // PNGs with no dependencies. Run: node scripts/icons.mjs
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
@@ -80,16 +80,19 @@ function sample(x, y) {
   return SLICES[i][0];
 }
 
-mkdirSync(OUT, { recursive: true });
 const SS = 6; // supersampling per axis
-for (const size of SIZES) {
+
+// `art` is the share of the canvas the donut fills; the rest stays transparent.
+function render(size, art = 1) {
   const rgba = Buffer.alloc(size * size * 4);
   for (let py = 0; py < size; py++) {
     for (let px = 0; px < size; px++) {
       let r = 0, g = 0, b = 0, hits = 0;
       for (let sy = 0; sy < SS; sy++) {
         for (let sx = 0; sx < SS; sx++) {
-          const c = sample((px + (sx + 0.5) / SS) / size - 0.5, (py + (sy + 0.5) / SS) / size - 0.5);
+          const x = ((px + (sx + 0.5) / SS) / size - 0.5) / art;
+          const y = ((py + (sy + 0.5) / SS) / size - 0.5) / art;
+          const c = sample(x, y);
           if (c) {
             r += c[0];
             g += c[1];
@@ -107,6 +110,15 @@ for (const size of SIZES) {
       }
     }
   }
-  writeFileSync(new URL(`icon-${size}.png`, OUT), png(size, rgba));
+  return png(size, rgba);
 }
+
+mkdirSync(OUT, { recursive: true });
+for (const size of SIZES) writeFileSync(new URL(`icon-${size}.png`, OUT), render(size));
 console.log(`Wrote ${SIZES.map((s) => `icon-${s}.png`).join(', ')}`);
+
+// Chrome Web Store icon: 96x96 artwork centered in a 128x128 canvas.
+const STORE = new URL('../store/assets/', import.meta.url);
+mkdirSync(STORE, { recursive: true });
+writeFileSync(new URL('store-icon-128.png', STORE), render(128, 96 / 128));
+console.log('Wrote store/assets/store-icon-128.png');

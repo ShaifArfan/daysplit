@@ -1,14 +1,14 @@
-# Tempo: website time tracker
+# Daysplit: website time tracker
 
-[![CI](https://github.com/ShaifArfan/tempo/actions/workflows/ci.yml/badge.svg)](https://github.com/ShaifArfan/tempo/actions/workflows/ci.yml)
+[![CI](https://github.com/ShaifArfan/daysplit/actions/workflows/ci.yml/badge.svg)](https://github.com/ShaifArfan/daysplit/actions/workflows/ci.yml)
 
 A browser extension that tracks how long you spend on each website and sorts that time into **Work**, **Entertainment**, **Waste** and **Other**. At the end of the day you can see how much of your browser time was focused work.
 
-It runs in Chromium browsers (Chrome, Brave, Edge, Arc, Vivaldi, Opera) and Firefox browsers (Firefox, Zen, LibreWolf, Floorp). All data stays in your browser. Nothing is sent anywhere.
+It runs in Chromium browsers (Chrome, Brave, Edge, Arc, Vivaldi, Opera) and Firefox browsers (Firefox, Zen, LibreWolf, Floorp). All data stays in your browser. Nothing is sent anywhere ([privacy policy](PRIVACY.md)).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/dashboard-dark.png">
-  <img alt="Tempo dashboard showing today's work time, the split between work, entertainment and waste, and charts by hour and for the last 7 days" src="docs/dashboard-light.png">
+  <img alt="Daysplit dashboard showing today's work time, the split between work, entertainment and waste, and charts by hour and for the last 7 days" src="docs/dashboard-light.png">
 </picture>
 
 ## What you get
@@ -22,7 +22,7 @@ It runs in Chromium browsers (Chrome, Brave, Edge, Arc, Vivaldi, Opera) and Fire
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/popup-dark.png">
-    <img alt="Tempo popup showing focused time, the current site with category buttons, and top sites" src="docs/popup-light.png" width="380">
+    <img alt="Daysplit popup showing focused time, the current site with category buttons, and top sites" src="docs/popup-light.png" width="380">
   </picture>
 </p>
 
@@ -65,7 +65,7 @@ That creates `dist/chromium` and `dist/firefox`.
 1. Open `chrome://extensions` (Brave: `brave://extensions`, Edge: `edge://extensions`).
 2. Turn on **Developer mode**.
 3. Click **Load unpacked** and pick the `dist/chromium` folder.
-4. Pin the Tempo icon to the toolbar.
+4. Pin the Daysplit icon to the toolbar.
 
 This install is permanent. After changing the code, rebuild and click the reload icon on the extension card.
 
@@ -80,7 +80,7 @@ This install is permanent. After changing the code, rebuild and click the reload
   npx web-ext sign --source-dir dist/firefox --channel unlisted --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET"
   ```
   This gives you a signed `.xpi`. Drag it into any Firefox-based browser to install it.
-- **Turn off signature checks.** This works only in builds that allow it, such as Firefox Developer Edition, Nightly, ESR and LibreWolf. Set `xpinstall.signatures.required` to `false` in `about:config`, then install `dist/tempo-firefox-<version>.zip`. Some forks ignore this setting.
+- **Turn off signature checks.** This works only in builds that allow it, such as Firefox Developer Edition, Nightly, ESR and LibreWolf. Set `xpinstall.signatures.required` to `false` in `about:config`, then install `dist/daysplit-firefox-<version>.zip`. Some forks ignore this setting.
 
 ## Development
 
@@ -90,26 +90,29 @@ npm run build        # dist/chromium + dist/firefox
 npm run package      # also writes store-ready zips in dist/
 npm run lint:firefox # Mozilla's add-on linter on the Firefox build
 npm run icons        # regenerate the PNG icons
+npm run screenshots  # regenerate README and store images (needs Google Chrome; run npm run build first)
 ```
 
 ```
 src/
-  background.js        tracking engine (service worker on Chromium, event page on Firefox)
-  lib/sites.js         built-in site list and address keywords (edit freely)
-  lib/core.js          categorizing, storage, time math, summaries
-  popup/               toolbar popup
-  dashboard/           full dashboard + settings (also the extension's options page)
-  ui/                  shared styles and DOM helpers
-scripts/build.mjs      writes a per-browser manifest.json into dist/
-test/                  node:test suites
+  background.js          tracking engine (service worker on Chromium, event page on Firefox)
+  lib/sites.js           built-in site list and address keywords (edit freely)
+  lib/core.js            categorizing, storage, time math, summaries
+  popup/                 toolbar popup
+  dashboard/             full dashboard + settings (also the extension's options page)
+  ui/                    shared styles and DOM helpers
+scripts/build.mjs        writes a per-browser manifest.json into dist/
+scripts/screenshots.mjs  loads the built extension in headless Chrome with demo data and captures images
+store/                   store listing text, Firefox submission metadata, store images
+test/                    node:test suites
 ```
 
-Permissions used: `tabs` (to read the active tab's address), `storage`, `idle`, `alarms` (one-minute heartbeat and the daily summary) and `notifications`. Chromium also gets `unlimitedStorage`. No host permissions and no content scripts: Tempo never reads page contents.
+Permissions used: `tabs` (to read the active tab's address), `storage`, `idle`, `alarms` (one-minute heartbeat and the daily summary) and `notifications`. Chromium also gets `unlimitedStorage`. No host permissions and no content scripts: Daysplit never reads page contents.
 
 ## Limits
 
 - Each browser keeps its own data. Time in Brave and time in Zen are tracked separately. To move history between them, use Export and Import in Settings (Import replaces matching days rather than adding to them).
-- Tempo only sees the browser. Time in other apps isn't tracked.
+- Daysplit only sees the browser. Time in other apps isn't tracked.
 - After you leave the computer, up to one idle timeout (2 minutes by default) is still counted before tracking stops.
 
 ## Contributing

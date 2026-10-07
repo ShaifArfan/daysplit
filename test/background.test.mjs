@@ -41,7 +41,7 @@ test('a burst of events never double-counts', async () => {
   env.chrome.windows.onFocusChanged.fire(1);
   env.chrome.tabs.onUpdated.fire(1, { status: 'complete' }, env.world.tab);
   env.chrome.tabs.onUpdated.fire(1, { url: env.world.tab.url }, env.world.tab);
-  env.chrome.alarms.onAlarm.fire({ name: 'tempo-tick' });
+  env.chrome.alarms.onAlarm.fire({ name: 'daysplit-tick' });
   await env.settle();
   assert.deepEqual(env.hosts(), { 'github.com': MIN });
 });
@@ -140,12 +140,12 @@ test('badge shows work time today, colored by the current site', async () => {
     await env.tick();
   }
   assert.equal(env.badge.text, '1h05');
-  assert.equal(env.badge.color, env.Tempo.BADGE_COLORS.work);
+  assert.equal(env.badge.color, env.Daysplit.BADGE_COLORS.work);
 
   env.world.tab = { ...env.world.tab, url: 'https://instagram.com/' };
   env.chrome.tabs.onActivated.fire({ tabId: 1 });
   await env.settle();
-  assert.equal(env.badge.color, env.Tempo.BADGE_COLORS.waste);
+  assert.equal(env.badge.color, env.Daysplit.BADGE_COLORS.waste);
   assert.equal(env.badge.text, '1h05', 'badge still shows work time');
 });
 
@@ -154,10 +154,10 @@ test('changing a rule recolors the badge right away', async () => {
   env.world.tab = { ...env.world.tab, url: 'https://youtube.com/' };
   env.chrome.tabs.onActivated.fire({ tabId: 1 });
   await env.settle();
-  assert.equal(env.badge.color, env.Tempo.BADGE_COLORS.entertainment);
-  await env.Tempo.setRule('youtube.com', 'work');
+  assert.equal(env.badge.color, env.Daysplit.BADGE_COLORS.entertainment);
+  await env.Daysplit.setRule('youtube.com', 'work');
   await env.settle();
-  assert.equal(env.badge.color, env.Tempo.BADGE_COLORS.work);
+  assert.equal(env.badge.color, env.Daysplit.BADGE_COLORS.work);
 });
 
 test('flush message commits time and replies', async () => {
@@ -182,8 +182,8 @@ test('end-of-day notification summarizes the day', async () => {
       },
     },
   });
-  assert.equal(env.alarms.get('tempo-summary').scheduledTime, at(2026, 10, 8, 21), 'next summary is tomorrow 21:00');
-  env.chrome.alarms.onAlarm.fire({ name: 'tempo-summary', scheduledTime: env.clock.now });
+  assert.equal(env.alarms.get('daysplit-summary').scheduledTime, at(2026, 10, 8, 21), 'next summary is tomorrow 21:00');
+  env.chrome.alarms.onAlarm.fire({ name: 'daysplit-summary', scheduledTime: env.clock.now });
   await env.settle();
   assert.equal(env.notifications.length, 1);
   const [n] = env.notifications;
@@ -193,7 +193,7 @@ test('end-of-day notification summarizes the day', async () => {
 
 test('a summary alarm that fires hours late is skipped', async () => {
   const env = await startBackground({ now: at(2026, 10, 8, 8), seed: { 'day:2026-10-07': { 10: { 'github.com': 90 * MIN } } } });
-  env.chrome.alarms.onAlarm.fire({ name: 'tempo-summary', scheduledTime: at(2026, 10, 7, 21) });
+  env.chrome.alarms.onAlarm.fire({ name: 'daysplit-summary', scheduledTime: at(2026, 10, 7, 21) });
   await env.settle();
   assert.equal(env.notifications.length, 0);
 });
@@ -206,7 +206,7 @@ test('old history is pruned past the retention window', async () => {
       'day:2026-09-20': { 9: { 'b.com': 1 } },
     },
   });
-  env.chrome.alarms.onAlarm.fire({ name: 'tempo-prune' });
+  env.chrome.alarms.onAlarm.fire({ name: 'daysplit-prune' });
   await env.settle();
   assert.equal('day:2026-08-01' in env.data, false);
   assert.equal('day:2026-09-20' in env.data, true);
@@ -214,16 +214,16 @@ test('old history is pruned past the retention window', async () => {
 
 test('setup creates heartbeat, prune and summary alarms', async () => {
   const env = await startBackground();
-  assert.equal(env.alarms.get('tempo-tick').periodInMinutes, 1);
-  assert.ok(env.alarms.get('tempo-prune'));
-  assert.ok(env.alarms.get('tempo-summary'));
+  assert.equal(env.alarms.get('daysplit-tick').periodInMinutes, 1);
+  assert.ok(env.alarms.get('daysplit-prune'));
+  assert.ok(env.alarms.get('daysplit-summary'));
   assert.equal(env.world.idleInterval, 120);
 });
 
 test('turning the summary off removes its alarm; idle setting is applied', async () => {
   const env = await startBackground();
-  await env.Tempo.saveSettings({ dailySummary: false, idleMinutes: 5 });
+  await env.Daysplit.saveSettings({ dailySummary: false, idleMinutes: 5 });
   await env.settle();
-  assert.equal(env.alarms.has('tempo-summary'), false);
+  assert.equal(env.alarms.has('daysplit-summary'), false);
   assert.equal(env.world.idleInterval, 300);
 });

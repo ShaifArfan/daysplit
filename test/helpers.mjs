@@ -119,7 +119,7 @@ export async function startBackground({ now = at(2026, 10, 7, 9), seed = {}, fil
       onInstalled: event(),
       onStartup: event(),
       onMessage: event(),
-      getURL: (path) => `chrome-extension://tempo/${path}`,
+      getURL: (path) => `chrome-extension://daysplit/${path}`,
       openOptionsPage() {},
     },
   };
@@ -150,15 +150,15 @@ export async function startBackground({ now = at(2026, 10, 7, 9), seed = {}, fil
     notifications,
     alarms,
     settle,
-    Tempo: context.Tempo,
+    Daysplit: context.Daysplit,
     advance(ms) {
       clock.now += ms;
     },
     async tick() {
-      chrome.alarms.onAlarm.fire({ name: 'tempo-tick', scheduledTime: clock.now });
+      chrome.alarms.onAlarm.fire({ name: 'daysplit-tick', scheduledTime: clock.now });
       await settle();
     },
-    day(key = context.Tempo.dayKey(clock.now)) {
+    day(key = context.Daysplit.dayKey(clock.now)) {
       return data[`day:${key}`] ?? {};
     },
     // Total ms per host for a day, across all hours.

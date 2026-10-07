@@ -1,5 +1,5 @@
-const { api } = Tempo;
-const { el } = TempoUI;
+const { api } = Daysplit;
+const { el } = DaysplitUI;
 const $ = (id) => document.getElementById(id);
 
 const TOP_SITES = 6;
@@ -7,23 +7,23 @@ const TOP_SITES = 6;
 let currentHost = null;
 
 async function render() {
-  const key = Tempo.dayKey();
+  const key = Daysplit.dayKey();
   const [days, rules, tabs] = await Promise.all([
-    Tempo.getDays([key]),
-    Tempo.getRules(),
+    Daysplit.getDays([key]),
+    Daysplit.getRules(),
     api.tabs.query({ active: true, currentWindow: true }),
   ]);
-  const summary = Tempo.summarize(days[key], rules);
+  const summary = Daysplit.summarize(days[key], rules);
   const { total, byCategory } = summary;
-  currentHost = Tempo.hostFromUrl(tabs[0]?.url);
+  currentHost = Daysplit.hostFromUrl(tabs[0]?.url);
 
   // Header
   $('dateLine').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
-  $('focusTime').textContent = Tempo.formatDuration(byCategory.work);
+  $('focusTime').textContent = Daysplit.formatDuration(byCategory.work);
   $('totalLine').textContent = total
-    ? `of ${Tempo.formatDuration(total)} in the browser today`
+    ? `of ${Daysplit.formatDuration(total)} in the browser today`
     : 'Nothing tracked yet today';
-  const focus = TempoUI.pct(byCategory.work, total);
+  const focus = DaysplitUI.pct(byCategory.work, total);
   $('score').style.setProperty('--p', focus);
   $('scoreValue').textContent = total ? `${focus}%` : '–';
   $('score').setAttribute('aria-label', total ? `Focus score ${focus}%` : 'Focus score: no data yet');
@@ -31,10 +31,10 @@ async function render() {
   renderCurrent(summary, rules);
 
   // Category split
-  $('stack').replaceChildren(TempoUI.stackbar(byCategory, total));
+  $('stack').replaceChildren(DaysplitUI.stackbar(byCategory, total));
   $('legend').replaceChildren(
-    ...Tempo.CATEGORIES.map((c) =>
-      el('li', {}, el('span', { class: 'dot', 'data-cat': c }), Tempo.LABELS[c], el('b', {}, Tempo.formatDuration(byCategory[c]))),
+    ...Daysplit.CATEGORIES.map((c) =>
+      el('li', {}, el('span', { class: 'dot', 'data-cat': c }), Daysplit.LABELS[c], el('b', {}, Daysplit.formatDuration(byCategory[c]))),
     ),
   );
 
@@ -47,8 +47,8 @@ async function render() {
         'li',
         {},
         el('span', { class: 'name', title: site.host }, site.host),
-        el('span', { class: 'time' }, Tempo.formatDuration(site.ms)),
-        TempoUI.catSelect(site, render),
+        el('span', { class: 'time' }, Daysplit.formatDuration(site.ms)),
+        DaysplitUI.catSelect(site, render),
       ),
     ),
   );
@@ -64,16 +64,16 @@ function renderCurrent(summary, rules) {
     seg.hidden = true;
     return;
   }
-  const info = Tempo.categorize(currentHost, rules);
+  const info = Daysplit.categorize(currentHost, rules);
   const ms = summary.sites.find((s) => s.host === currentHost)?.ms ?? 0;
   $('curHost').textContent = currentHost;
   $('curHost').title = currentHost;
-  $('curMeta').textContent = `${Tempo.formatDuration(ms)} today · ${TempoUI.sourceText({ ...info, host: currentHost })}`;
+  $('curMeta').textContent = `${Daysplit.formatDuration(ms)} today · ${DaysplitUI.sourceText({ ...info, host: currentHost })}`;
   $('curAvatar').textContent = currentHost.replace(/^\[|\]$/g, '')[0];
   $('curAvatar').dataset.cat = info.category;
   seg.hidden = false;
   seg.replaceChildren(
-    ...Tempo.CATEGORIES.map((c) =>
+    ...Daysplit.CATEGORIES.map((c) =>
       el(
         'button',
         {
@@ -82,12 +82,12 @@ function renderCurrent(summary, rules) {
           'aria-checked': String(c === info.category),
           'data-cat': c,
           onclick: async () => {
-            await Tempo.setRule(currentHost, c);
+            await Daysplit.setRule(currentHost, c);
             render();
           },
         },
         el('span', { class: 'dot' }),
-        Tempo.LABELS[c],
+        Daysplit.LABELS[c],
       ),
     ),
   );
@@ -105,4 +105,4 @@ $('openSettings').addEventListener('click', async () => {
 
 // Show stored numbers immediately, then refresh once the background has
 // committed the last few seconds.
-render().then(() => TempoUI.flush()).then(render);
+render().then(() => DaysplitUI.flush()).then(render);

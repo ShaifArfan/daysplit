@@ -1,5 +1,5 @@
 // Small DOM helpers shared by the popup and dashboard.
-globalThis.TempoUI = (() => {
+globalThis.DaysplitUI = (() => {
   // el('div', { class: 'x', onclick: fn }, child, 'text', ...)
   function el(tag, props = {}, ...children) {
     const node = document.createElement(tag);
@@ -39,11 +39,11 @@ globalThis.TempoUI = (() => {
         title: sourceText(site),
         onchange: async () => {
           select.dataset.cat = select.value;
-          await Tempo.setRule(site.host, select.value);
+          await Daysplit.setRule(site.host, select.value);
           onChange?.(select.value);
         },
       },
-      Tempo.CATEGORIES.map((c) => el('option', { value: c, selected: c === site.category }, Tempo.LABELS[c])),
+      Daysplit.CATEGORIES.map((c) => el('option', { value: c, selected: c === site.category }, Daysplit.LABELS[c])),
     );
     select.dataset.cat = site.category;
     return select;
@@ -52,12 +52,12 @@ globalThis.TempoUI = (() => {
   function stackbar(byCategory, total) {
     const bar = el('div', { class: 'stackbar', role: 'img' });
     const parts = [];
-    for (const c of Tempo.CATEGORIES) {
+    for (const c of Daysplit.CATEGORIES) {
       if (!byCategory[c] || !total) continue;
       const pct = (byCategory[c] / total) * 100;
       if (pct < 0.4) continue;
       bar.append(el('span', { 'data-cat': c, style: { flex: `${pct} 1 0` } }));
-      parts.push(`${Tempo.LABELS[c]} ${Math.round(pct)}%`);
+      parts.push(`${Daysplit.LABELS[c]} ${Math.round(pct)}%`);
     }
     bar.setAttribute('aria-label', parts.length ? parts.join(', ') : 'No time tracked');
     return bar;
@@ -66,7 +66,7 @@ globalThis.TempoUI = (() => {
   // Ask the background to commit the time counted so far.
   async function flush() {
     try {
-      await Tempo.api.runtime.sendMessage({ type: 'flush' });
+      await Daysplit.api.runtime.sendMessage({ type: 'flush' });
     } catch {
       // Background not reachable (e.g. still starting): show what's stored.
     }

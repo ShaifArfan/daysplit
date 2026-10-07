@@ -1,5 +1,5 @@
-// Tempo core: shared by the background script, the popup and the dashboard.
-// Loaded as a classic script after lib/sites.js; exposes globalThis.Tempo.
+// Daysplit core: shared by the background script, the popup and the dashboard.
+// Loaded as a classic script after lib/sites.js; exposes globalThis.Daysplit.
 //
 // Storage layout (browser.storage.local):
 //   settings          -> user settings (merged over DEFAULT_SETTINGS)
@@ -9,7 +9,7 @@
 //
 // Only raw time per host is stored. Categories are applied when reading, so
 // changing a site's category also fixes every past day.
-globalThis.Tempo = (() => {
+globalThis.Daysplit = (() => {
   const api = globalThis.browser ?? globalThis.chrome;
   const store = api.storage.local;
 
@@ -34,10 +34,10 @@ globalThis.Tempo = (() => {
 
   const BUILTIN = new Map();
   for (const category of ['work', 'entertainment', 'waste']) {
-    for (const domain of TempoSites[category]) BUILTIN.set(domain, category);
+    for (const domain of DaysplitSites[category]) BUILTIN.set(domain, category);
   }
   const KEYWORDS = Object.fromEntries(
-    Object.entries(TempoSites.keywords).map(([category, words]) => [category, new Set(words)]),
+    Object.entries(DaysplitSites.keywords).map(([category, words]) => [category, new Set(words)]),
   );
 
   function isLocalHost(name) {
@@ -62,7 +62,7 @@ globalThis.Tempo = (() => {
 
   // Returns { category, source } where source is:
   //   'rule'  - you picked it (rule says which pattern matched)
-  //   'auto'  - Tempo's built-in list of known sites
+  //   'auto'  - Daysplit's built-in list of known sites
   //   'guess' - guessed from words in the address
   //   'none'  - no idea yet
   function categorize(host, rules = {}) {
@@ -84,7 +84,7 @@ globalThis.Tempo = (() => {
     return { category: 'other', source: 'none' };
   }
 
-  // The thing Tempo tracks: hostname without "www.", plus the port for local
+  // The thing Daysplit tracks: hostname without "www.", plus the port for local
   // dev servers so localhost:3000 and localhost:5173 stay separate.
   // Returns null for anything that isn't a normal web page.
   function hostFromUrl(url) {

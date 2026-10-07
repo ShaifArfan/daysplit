@@ -1,5 +1,6 @@
 # Build output (npm run build)
 dist/
+store/.raw/
 
 node_modules/
 .web-extension-id

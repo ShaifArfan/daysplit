@@ -3,7 +3,7 @@
 //
 // Entries match the domain and all of its subdomains, so "google.com" would
 // also cover "mail.google.com". The most specific entry wins.
-globalThis.TempoSites = {
+globalThis.DaysplitSites = {
   work: [
     // Code & dev tools
     'github.com', 'gitlab.com', 'bitbucket.org', 'stackoverflow.com', 'stackexchange.com',
@@ -60,7 +60,7 @@ globalThis.TempoSites = {
     'tmz.com', 'dailymail.co.uk', 'likee.video', 'vk.com',
   ],
 
-  // When a site isn't listed above, Tempo looks at the words in its address
+  // When a site isn't listed above, Daysplit looks at the words in its address
   // (split on dots and dashes). "docs.python.org" contains "docs", so it's
   // probably work; "something.tv" ends in "tv", so probably entertainment.
   keywords: {

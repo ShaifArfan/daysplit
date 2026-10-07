@@ -1,0 +1,16 @@
+{
+  "categories": ["other"],
+  "summary": {
+    "en-US": "See where your browser time goes. Daysplit tracks time on each website and splits your day into work, entertainment and waste. Everything stays on your device."
+  },
+  "support_url": {
+    "en-US": "https://github.com/ShaifArfan/daysplit/issues"
+  },
+  "version": {
+    "license": "MIT",
+    "release_notes": {
+      "en-US": "First release."
+    },
+    "approval_notes": "Plain JavaScript with no bundler or minification. The build step (scripts/build.mjs) only copies src/ and writes a per-browser manifest. Source: https://github.com/ShaifArfan/daysplit. The add-on makes no network requests and runs no remote code; all data stays in storage.local."
+  }
+}

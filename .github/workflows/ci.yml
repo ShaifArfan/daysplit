@@ -34,5 +34,5 @@ jobs:
         if: matrix.node == 24
         uses: actions/upload-artifact@v7
         with:
-          name: tempo-extension
+          name: daysplit-extension
           path: dist/*.zip

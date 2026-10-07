@@ -1,11 +1,11 @@
-const { api, CATEGORIES, LABELS, formatDuration: fmt } = Tempo;
-const { el, pct } = TempoUI;
+const { api, CATEGORIES, LABELS, formatDuration: fmt } = Daysplit;
+const { el, pct } = DaysplitUI;
 const $ = (id) => document.getElementById(id);
 
 const HOUR = 3600 * 1000;
 const SITE_LIMIT = 40;
 
-const ui = { day: Tempo.dayKey(), filter: 'all', showAll: false };
+const ui = { day: Daysplit.dayKey(), filter: 'all', showAll: false };
 
 // ---- Views -----------------------------------------------------------------
 
@@ -95,9 +95,9 @@ function tipRows(title, totals, extra = []) {
 // ---- Overview --------------------------------------------------------------
 
 async function renderOverview() {
-  const keys = Array.from({ length: 7 }, (_, i) => Tempo.shiftDay(ui.day, i - 6));
-  const [days, rules] = await Promise.all([Tempo.getDays(keys), Tempo.getRules()]);
-  const summaries = keys.map((k) => Tempo.summarize(days[k], rules));
+  const keys = Array.from({ length: 7 }, (_, i) => Daysplit.shiftDay(ui.day, i - 6));
+  const [days, rules] = await Promise.all([Daysplit.getDays(keys), Daysplit.getRules()]);
+  const summaries = keys.map((k) => Daysplit.summarize(days[k], rules));
   const day = summaries[6];
 
   renderDayNav();
@@ -109,9 +109,9 @@ async function renderOverview() {
 }
 
 function renderDayNav() {
-  const today = Tempo.dayKey();
-  const date = Tempo.dayStart(ui.day);
-  const yesterday = Tempo.shiftDay(today, -1);
+  const today = Daysplit.dayKey();
+  const date = Daysplit.dayStart(ui.day);
+  const yesterday = Daysplit.shiftDay(today, -1);
   $('dayTitle').textContent =
     ui.day === today ? 'Today' : ui.day === yesterday ? 'Yesterday' : date.toLocaleDateString(undefined, { weekday: 'long' });
   $('daySub').textContent = date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -123,7 +123,7 @@ function renderDayNav() {
 
 function delta(cur, prev, upIsGood) {
   if (!prev) return null;
-  const vs = ui.day === Tempo.dayKey() ? 'yesterday' : 'the day before';
+  const vs = ui.day === Daysplit.dayKey() ? 'yesterday' : 'the day before';
   const diff = cur - prev;
   if (Math.abs(diff) < 60 * 1000) return el('span', { class: 'delta flat' }, `Same as ${vs}`);
   const up = diff > 0;
@@ -163,7 +163,7 @@ function renderSplit(day) {
   $('splitNote').textContent = total
     ? `${fmt(total)} in the browser · focus score ${pct(byCategory.work, total)}%`
     : 'No browsing tracked on this day.';
-  $('splitBar').replaceChildren(TempoUI.stackbar(byCategory, total));
+  $('splitBar').replaceChildren(DaysplitUI.stackbar(byCategory, total));
   $('splitLegend').replaceChildren(
     ...CATEGORIES.map((c) =>
       el(
@@ -228,7 +228,7 @@ function renderHours(day, raw, rules) {
           el(
             'div',
             { class: 'row muted' },
-            el('span', { class: 'dot', 'data-cat': Tempo.categorize(host, rules).category }),
+            el('span', { class: 'dot', 'data-cat': Daysplit.categorize(host, rules).category }),
             host,
             el('b', {}, fmt(ms)),
           ),
@@ -277,7 +277,7 @@ function renderWeek(keys, summaries) {
   const cols = el('div', { class: 'cols' });
   keys.forEach((key, i) => {
     const s = summaries[i];
-    const date = Tempo.dayStart(key);
+    const date = Daysplit.dayStart(key);
     const name = date.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
     const col = el(
       'button',
@@ -299,7 +299,7 @@ function renderWeek(keys, summaries) {
     'div',
     { class: 'x-axis', 'aria-hidden': 'true' },
     keys.map((key) => {
-      const d = Tempo.dayStart(key);
+      const d = Daysplit.dayStart(key);
       return el(
         'span',
         { class: key === ui.day ? 'selected' : '' },
@@ -358,10 +358,10 @@ function renderSites(day) {
           'div',
           { class: 'site-cell' },
           el('span', { class: 'site-name', title: site.host }, site.host),
-          el('span', { class: 'site-source' }, TempoUI.sourceText(site)),
+          el('span', { class: 'site-source' }, DaysplitUI.sourceText(site)),
         ),
       ),
-      el('td', {}, TempoUI.catSelect(site)),
+      el('td', {}, DaysplitUI.catSelect(site)),
       el('td', { class: 'time-cell' }, fmt(site.ms)),
       el(
         'td',
@@ -405,23 +405,23 @@ function renderSites(day) {
 }
 
 function goToDay(key) {
-  const today = Tempo.dayKey();
+  const today = Daysplit.dayKey();
   ui.day = key > today ? today : key;
   ui.showAll = false;
   renderOverview();
 }
 
-$('prevDay').addEventListener('click', () => goToDay(Tempo.shiftDay(ui.day, -1)));
-$('nextDay').addEventListener('click', () => goToDay(Tempo.shiftDay(ui.day, 1)));
-$('todayBtn').addEventListener('click', () => goToDay(Tempo.dayKey()));
+$('prevDay').addEventListener('click', () => goToDay(Daysplit.shiftDay(ui.day, -1)));
+$('nextDay').addEventListener('click', () => goToDay(Daysplit.shiftDay(ui.day, 1)));
+$('todayBtn').addEventListener('click', () => goToDay(Daysplit.dayKey()));
 $('dayPicker').addEventListener('change', (e) => {
   if (/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) goToDay(e.target.value);
 });
 document.addEventListener('keydown', (e) => {
   if (currentView() !== 'overview' || e.altKey || e.metaKey || e.ctrlKey) return;
   if (e.target.closest('input, select, textarea')) return;
-  if (e.key === 'ArrowLeft') goToDay(Tempo.shiftDay(ui.day, -1));
-  if (e.key === 'ArrowRight') goToDay(Tempo.shiftDay(ui.day, 1));
+  if (e.key === 'ArrowLeft') goToDay(Daysplit.shiftDay(ui.day, -1));
+  if (e.key === 'ArrowRight') goToDay(Daysplit.shiftDay(ui.day, 1));
 });
 
 // ---- Settings --------------------------------------------------------------
@@ -436,7 +436,7 @@ function toast(message) {
 }
 
 async function renderSettings() {
-  const [settings, rules, all] = await Promise.all([Tempo.getSettings(), Tempo.getRules(), Tempo.getAll()]);
+  const [settings, rules, all] = await Promise.all([Daysplit.getSettings(), Daysplit.getRules(), Daysplit.getAll()]);
 
   $('idleMinutes').value = String(settings.idleMinutes);
   $('countAudible').checked = settings.countAudibleWhenIdle;
@@ -454,7 +454,7 @@ async function renderSettings() {
         'li',
         {},
         el('span', { class: 'pattern', title: pattern }, pattern),
-        TempoUI.catSelect({ host: pattern, category: rules[pattern], source: 'rule' }),
+        DaysplitUI.catSelect({ host: pattern, category: rules[pattern], source: 'rule' }),
         el(
           'button',
           {
@@ -462,7 +462,7 @@ async function renderSettings() {
             class: 'btn small',
             'aria-label': `Remove rule for ${pattern}`,
             onclick: async () => {
-              await Tempo.removeRule(pattern);
+              await Daysplit.removeRule(pattern);
               toast(`Removed rule for ${pattern}`);
             },
           },
@@ -474,7 +474,7 @@ async function renderSettings() {
 
   const dayKeys = Object.keys(all.days).sort();
   $('dataNote').textContent = dayKeys.length
-    ? `${dayKeys.length} day${dayKeys.length === 1 ? '' : 's'} of history stored, starting ${Tempo.dayStart(dayKeys[0]).toLocaleDateString()}.`
+    ? `${dayKeys.length} day${dayKeys.length === 1 ? '' : 's'} of history stored, starting ${Daysplit.dayStart(dayKeys[0]).toLocaleDateString()}.`
     : 'No history stored yet.';
 }
 
@@ -485,7 +485,7 @@ ruleCat.addEventListener('change', () => (ruleCat.dataset.cat = ruleCat.value));
 
 $('addRule').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const pattern = Tempo.normalizePattern($('rulePattern').value);
+  const pattern = Daysplit.normalizePattern($('rulePattern').value);
   const error = $('ruleError');
   if (!pattern) {
     error.textContent = 'That doesn’t look like a website. Try something like youtube.com.';
@@ -493,13 +493,13 @@ $('addRule').addEventListener('submit', async (e) => {
     return;
   }
   error.hidden = true;
-  await Tempo.setRule(pattern, ruleCat.value);
+  await Daysplit.setRule(pattern, ruleCat.value);
   $('rulePattern').value = '';
   toast(`${pattern} → ${LABELS[ruleCat.value]}`);
 });
 
 async function saveSetting(patch) {
-  await Tempo.saveSettings(patch);
+  await Daysplit.saveSettings(patch);
   toast('Saved');
 }
 
@@ -513,10 +513,10 @@ $('summaryTime').addEventListener('change', (e) => {
 $('retentionDays').addEventListener('change', (e) => saveSetting({ retentionDays: Number(e.target.value) }));
 
 $('exportBtn').addEventListener('click', async () => {
-  const data = await Tempo.getAll();
-  const json = JSON.stringify({ app: 'tempo', version: 1, exportedAt: new Date().toISOString(), ...data }, null, 2);
+  const data = await Daysplit.getAll();
+  const json = JSON.stringify({ app: 'daysplit', version: 1, exportedAt: new Date().toISOString(), ...data }, null, 2);
   const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
-  const link = el('a', { href: url, download: `tempo-${Tempo.dayKey()}.json` });
+  const link = el('a', { href: url, download: `daysplit-${Daysplit.dayKey()}.json` });
   document.body.append(link);
   link.click();
   link.remove();
@@ -536,15 +536,15 @@ $('importFile').addEventListener('change', async (e) => {
     toast('That file isn’t valid JSON.');
     return;
   }
-  if (data?.app !== 'tempo' || typeof data.days !== 'object') {
-    toast('That isn’t a Tempo export.');
+  if (data?.app !== 'daysplit' || typeof data.days !== 'object') {
+    toast('That isn’t a Daysplit export.');
     return;
   }
   const days = Object.fromEntries(
     Object.entries(data.days).filter(([k, v]) => /^\d{4}-\d{2}-\d{2}$/.test(k) && v && typeof v === 'object'),
   );
   const rules = Object.fromEntries(
-    Object.entries(data.rules ?? {}).filter(([k, v]) => Tempo.normalizePattern(k) === k && CATEGORIES.includes(v)),
+    Object.entries(data.rules ?? {}).filter(([k, v]) => Daysplit.normalizePattern(k) === k && CATEGORIES.includes(v)),
   );
   const ok = confirm(
     `Import ${Object.keys(days).length} days of history and ${Object.keys(rules).length} rules?\n\n` +
@@ -552,22 +552,22 @@ $('importFile').addEventListener('change', async (e) => {
   );
   if (!ok) return;
   const settings = Object.fromEntries(
-    Object.entries(data.settings ?? {}).filter(([k, v]) => typeof v === typeof Tempo.DEFAULT_SETTINGS[k]),
+    Object.entries(data.settings ?? {}).filter(([k, v]) => typeof v === typeof Daysplit.DEFAULT_SETTINGS[k]),
   );
-  await Tempo.replaceDays(days);
-  await Tempo.saveRules({ ...(await Tempo.getRules()), ...rules });
-  await Tempo.saveSettings(settings);
+  await Daysplit.replaceDays(days);
+  await Daysplit.saveRules({ ...(await Daysplit.getRules()), ...rules });
+  await Daysplit.saveSettings(settings);
   toast('Import complete');
 });
 
 $('eraseBtn').addEventListener('click', async () => {
-  const ok = confirm('Erase all Tempo history, rules and settings in this browser?\n\nThis can’t be undone. Export first if you want a backup.');
+  const ok = confirm('Erase all Daysplit history, rules and settings in this browser?\n\nThis can’t be undone. Export first if you want a backup.');
   if (!ok) return;
-  await Tempo.clearAll();
+  await Daysplit.clearAll();
   toast('All data erased');
 });
 
 // ---- Start -----------------------------------------------------------------
 
 showView();
-TempoUI.flush().then(() => currentView() === 'overview' && renderOverview());
+DaysplitUI.flush().then(() => currentView() === 'overview' && renderOverview());

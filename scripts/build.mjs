@@ -18,13 +18,13 @@ const icons = { 16: 'icons/icon-16.png', 32: 'icons/icon-32.png', 48: 'icons/ico
 
 const base = {
   manifest_version: 3,
-  name: 'Tempo – Website Time Tracker',
-  short_name: 'Tempo',
+  name: 'Daysplit – Website Time Tracker',
+  short_name: 'Daysplit',
   version,
   description: 'See how much time you spend on each website, split into work, entertainment and waste. Everything stays on your device.',
   permissions: ['tabs', 'storage', 'idle', 'alarms', 'notifications'],
   icons,
-  action: { default_title: 'Tempo', default_popup: 'popup/popup.html', default_icon: icons },
+  action: { default_title: 'Daysplit', default_popup: 'popup/popup.html', default_icon: icons },
   options_ui: { page: 'dashboard/dashboard.html', open_in_tab: true },
 };
 
@@ -41,7 +41,7 @@ const manifests = {
     background: { scripts: ['lib/sites.js', 'lib/core.js', 'background.js'] },
     browser_specific_settings: {
       gecko: {
-        id: 'tempo-time-tracker@local',
+        id: 'daysplit@shaifarfan.github.io',
         strict_min_version: '142.0',
         data_collection_permissions: { required: ['none'] },
       },
@@ -64,7 +64,7 @@ for (const [name, manifest] of Object.entries(manifests)) {
   const out = buildTarget(name, manifest);
   console.log(`Built ${out}`);
   if (zip) {
-    const file = join(dist, `tempo-${name}-${version}.zip`);
+    const file = join(dist, `daysplit-${name}-${version}.zip`);
     rmSync(file, { force: true });
     execFileSync('zip', ['-r', '-X', '-q', file, ...readdirSync(out)], { cwd: out });
     console.log(`Packed ${file}`);
